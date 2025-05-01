@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: users
-          image: $(REGISTRY)/users:latest
+          image: ghcr.io/lucasquin/users:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5001
