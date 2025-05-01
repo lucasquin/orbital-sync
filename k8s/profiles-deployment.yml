@@ -1,29 +1,25 @@
-variables:
-  app-name: "profiles-api"
-  port: "5000"
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $(app-name)-deployment
+  name: profiles-deployment
   labels:
-    app: $(app-name)
+    app: profiles
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: $(app-name)
+      app: profiles
   template:
     metadata:
       labels:
-        app: $(app-name)
+        app: profiles
     spec:
       containers:
-        - name: $(app-name)
-          image: $(REGISTRY)/$(app-name):latest
+        - name: profiles
+          image: $(REGISTRY)/profiles:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: $(port)
+            - containerPort: 5000
           resources:
             limits:
               cpu: "200m"
@@ -34,12 +30,12 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: $(port)
+              port: 5000
             initialDelaySeconds: 5
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health
-              port: $(port)
+              port: 5000
             initialDelaySeconds: 5
             periodSeconds: 10

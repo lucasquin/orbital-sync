@@ -1,15 +1,11 @@
-variables:
-  app-name: "profiles-api"
-  port: "5000"
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: $(app-name)-service
+  name: profiles-service
 spec:
   selector:
-    app: $(app-name)
+    app: profiles
   ports:
-    - port: $(port)
-      targetPort: $(port)
+    - port: 5000
+      targetPort: 5000
   type: ClusterIP
