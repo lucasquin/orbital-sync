@@ -14,6 +14,8 @@ spec:
       labels:
         app: profiles
     spec:
+      imagePullSecrets:
+        - name: github-registry
       containers:
         - name: profiles
           image: ghcr.io/lucasquin/profiles:latest
