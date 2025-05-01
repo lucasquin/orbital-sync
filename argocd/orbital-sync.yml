@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: OrbitalSync
+  namespace: argocd
+spec:
+  description: Projeto para POC de K8s com ArgoCD, com APIs que se comunicam escritas em Lua.
+  sourceRepos:
+    - "*"
+  destinations:
+    - namespace: orbital-sync
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
