@@ -24,6 +24,7 @@ COPY init.lua /app/init.lua
 RUN mkdir -p /app/nginx/conf && \
   mkdir -p /app/nginx/logs && \
   echo 'worker_processes 1;' > /app/nginx/conf/nginx.conf && \
+  echo 'daemon off;' >> /app/nginx/conf/nginx.conf && \
   echo 'error_log logs/error.log;' >> /app/nginx/conf/nginx.conf && \
   echo 'events { worker_connections 1024; }' >> /app/nginx/conf/nginx.conf && \
   echo 'http {' >> /app/nginx/conf/nginx.conf && \
