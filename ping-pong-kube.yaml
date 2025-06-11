@@ -39,7 +39,6 @@ spec:
         httpGet:
           path: /health
           port: 5001
-
         initialDelaySeconds: 40
         periodSeconds: 30
         timeoutSeconds: 10
@@ -87,7 +86,6 @@ spec:
       ports:
         - containerPort: 3000
           hostPort: 3000
-
       env:
         - name: GF_SECURITY_ADMIN_PASSWORD
           value: "admin123"
@@ -115,6 +113,7 @@ spec:
         path: ./traefik
         type: Directory
   restartPolicy: Always
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

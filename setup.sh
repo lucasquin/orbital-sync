@@ -91,7 +91,7 @@ done
 
 echo "Testing Pong API..."
 for i in {1..5}; do
-  if curl -f http://localhost:5001/health2 >/dev/null; then
+  if curl -f http://localhost:5001/health 2>/dev/null; then
     echo "✅ Pong API health check OK"
     break
   fi
