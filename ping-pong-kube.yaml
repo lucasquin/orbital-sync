@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pingpong-stack
+  labels:
+    app: pingpong
+spec:
+  containers:
+    # Traefik Container
+    - name: traefik
+      image: docker.io/traefik:v3.0
+      ports:
+        - containerPort: 8080
+          hostPort: 8080
+      args:
+        - --api.insecure=true
+        - --api.dashboard=true
+        - --entrypoints.web.address=:80
+        - --providers.file.directory=/etc/traefik/dynamic
+        - --providers.file.watch=true
+        - --log.level=INFO
+      volumeMounts:
+        - name: traefik-config
+          mountPath: /etc/traefik/dynamic
+          readOnly: true
+
+    # Pong API Container
+    - name: pong-api
+      image: localhost/pong-api:latest
+      ports:
+        - containerPort: 5001
+          hostPort: 5001
+      env:
+        - name: PORT
+          value: "5001"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 5001
+
+        initialDelaySeconds: 40
+        periodSeconds: 30
+        timeoutSeconds: 10
+        failureThreshold: 3
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 5001
+        initialDelaySeconds: 10
+        periodSeconds: 10
+
+    # Ping API Container
+    - name: ping-api
+      image: localhost/ping-api:latest
+      ports:
+        - containerPort: 5000
+          hostPort: 5000
+      env:
+        - name: PORT
+          value: "5000"
+        - name: PONG_API_URL
+          value: "http://localhost:5001"
+        - name: PING_API_URL
+          value: "http://localhost:5000"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 5000
+        initialDelaySeconds: 40
+        periodSeconds: 30
+        timeoutSeconds: 10
+        failureThreshold: 3
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 5000
+        initialDelaySeconds: 10
+        periodSeconds: 10
+
+    # Grafana Container
+    - name: grafana
+      image: docker.io/grafana/grafana:latest
+      ports:
+        - containerPort: 3000
+          hostPort: 3000
+
+      env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: "admin123"
+      volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+        - name: grafana-dashboards
+          mountPath: /var/lib/grafana/dashboards
+        - name: grafana-provisioning
+          mountPath: /etc/grafana/provisioning
+  volumes:
+    - name: grafana-storage
+      persistentVolumeClaim:
+        claimName: grafana-storage
+    - name: grafana-dashboards
+      hostPath:
+        path: ./monitoring/grafana/dashboards
+        type: Directory
+    - name: grafana-provisioning
+      hostPath:
+        path: ./monitoring/grafana/provisioning
+        type: Directory
+    - name: traefik-config
+      hostPath:
+        path: ./traefik
+        type: Directory
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

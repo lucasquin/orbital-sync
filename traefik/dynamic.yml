@@ -1,0 +1,51 @@
+http:
+  routers:
+    ping-api:
+      rule: "PathPrefix(`/api/ping`)"
+      service: ping-service
+      entryPoints:
+        - web
+
+    pong-api:
+      rule: "PathPrefix(`/api/pong`)"
+      service: pong-service
+      entryPoints:
+        - web
+
+    grafana:
+      rule: "PathPrefix(`/grafana`)"
+      service: grafana-service
+      entryPoints:
+        - web
+      middlewares:
+        - grafana-stripprefix
+
+    # Default route for ping API (root path)
+    default:
+      rule: "PathPrefix(`/`)"
+      service: ping-service
+      entryPoints:
+        - web
+      priority: 1
+
+  services:
+    ping-service:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:5000"
+
+    pong-service:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:5001"
+
+    grafana-service:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:3000"
+
+  middlewares:
+    grafana-stripprefix:
+      stripPrefix:
+        prefixes:
+          - "/grafana"

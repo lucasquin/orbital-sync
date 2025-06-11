@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: orbital-sync
+  name: lua-apis
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/lucasquin/orbital-sync.git
+    repoURL: https://github.com/seu-usuario/lua-apis
     targetRevision: HEAD
     path: k8s
   destination:
     server: https://kubernetes.default.svc
-    namespace: orbital-sync
+    namespace: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+    - CreateNamespace=true
